@@ -1,0 +1,82 @@
+---
+title: "Example usage of makl_train() and makl_test() functions"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{makl_example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+For a better understanding of `MAKL` library, we build a simple example in this document. We first create a synthetic dataset that consists of 1000 rows and 6 features, using standard Gaussian distribution.
+
+```{r setup}
+library(MAKL)
+set.seed(64327) #midas
+df <- matrix(rnorm(6000, 0, 1), nrow = 1000)
+colnames(df) <- c("F1", "F2", "F3", "F4", "F5", "F6")
+```
+
+As to `membership` argument of `makl_train()` function, we prepare a list consisting of two groups such that the first one contains the features F1, F5 and F6; the second one contains the rest. Note that the column names of the input dataset should be the superset of the union of all feature names in the `groups` list.
+
+```{r}
+# check colnames(df) for them to be matching with group members
+groups <- list()
+groups[[1]] <- c("F1", "F5", "F6")
+groups[[2]] <- c("F2", "F3", "F4")
+```
+
+We then create the response vector `y` such that it will be dependent on the second, the third and the fourth features, namely F2, F3 and F4: If, for a data instance, the sum of entries in the second, the third and the fourth columns is positive, the corresponding response is assigned +1, else, it is assigned -1.
+
+```{r}
+y <- c()
+for(i in 1:nrow(df)) {
+  if((df[i, 2] + df[i, 3] + df[i, 4]) > 0) {
+    y[i] <- +1
+  } else {
+    y[i] <- -1
+  }
+}
+```
+
+We use the synthetic dataset `df` and response vector `y` as our train dataset and train response vector in the `makl_train()` function, we choose the number of random features `D` equal to 2 which makes sense knowing that our train dataset is 6 dimensional. We choose the number of rows to be used for distance matrix calculation, `sigma_N` equal to 1000, and `lambda_set` consisting of 0.9, 0.8, 0.7, 0.6 for sparse solutions. As membership list, we use the `groups` list that we had created above.
+
+```{r}
+makl_model <- makl_train(X = df, y = y, D = 2, sigma_N = 1000, CV = 1, membership = groups, lambda_set = c(0.9, 0.8, 0.7, 0.6))
+```
+
+When we check the coefficients of our model, we see that the chosen kernel for prediction by `makl_train()` was the kernel of the second group. This was an expected result since we created the response vector `y` to be dependent on the second group members of the `groups` list.
+
+```{r}
+makl_model$model$coefficients
+```
+
+Now, let us create a synthetic dataset `df_test` and a synthetic test response vector `y_test` to use in `makl_test()` function to check the results.
+
+```{r}
+df_test <- matrix(rnorm(600, 0, 1), nrow = 100)
+colnames(df_test) <- c("F1", "F2", "F3", "F4", "F5", "F6")
+y_test <- c()
+for(i in 1:nrow(df_test)) {
+  if((df_test[i, 2] + df_test[i, 3] + df_test[i, 4]) > 0) {
+    y_test[i] <- +1
+  } else {
+    y_test[i] <- -1
+  }
+}
+result <-makl_test(X = df_test, y = y_test, makl_model = makl_model)
+```
+
+The list `result` contains two elements: 
+1) The predictions for the test response vector `y_test` and
+2) The area under the ROC curve (AUROC) versus the number of selected kernels values for each element in the `lambda_set` if `CV` is not applied; the area under the ROC curve versus the number of selected kernels value for the best `lambda` in the `lambda_set` if `CV` is applied.
+
+```{r}
+result$auroc_kernel_number
+```
