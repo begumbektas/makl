@@ -4,7 +4,7 @@ library(xgboost)
 
 data_path <- "./data"
 result_path <- "./results"
-pathway <- "hallmark" #replace with "pid" if you would like to use PID pathways
+pathway <- "none" #replace with "hallmark" or "pid" if you would like to use Hallmark gene sets or PID pathways.
 problem <- "stage" #replace with "survival" or with "sc" if you would like to perform the experiments on these problems.
 
 for(replication in 1:100) {
