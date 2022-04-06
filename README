@@ -1,6 +1,8 @@
 Fast and interpretable genomic data analysis using multiple approximate kernel learning
 
-This repository contains the following parts that are associated with the manuscript "Fast and interpretable genomic data analysis using multiple approximate kernel learning", which is in press, to be published in Bioinformatics and will be presented at ISMB 2022.
+This repository contains the following parts that are associated with the manuscript 
+"Fast and interpretable genomic data analysis using multiple approximate kernel learning", 
+which is in press, to be published in Bioinformatics and will be presented at ISMB 2022.
 
 1) R package implementation of the proposed MAKL algorithm and its usage to replicate the reported experiments.
 2) R implementation of the baseline algorithm XGBoost to replicate the reported experiments.
