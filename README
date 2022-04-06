@@ -8,5 +8,5 @@ which is in press, to be published in Bioinformatics and will be presented at IS
 2) R implementation of the baseline algorithm XGBoost to replicate the reported experiments.
 
 Please note that this R package is accepted by and available on CRAN under the name MAKL.
-If you would like to install it from Github instead, you may use devtools::install_github("begumbektas/makl") R command.
+If you would like to install it from GitHub instead, you may use devtools::install_github("begumbektas/makl") R command.
 
